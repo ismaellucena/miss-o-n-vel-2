@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenando Valores</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="ordenando.js" defer></script>
+</head>
+<body>
+    <h1>Ordenação de Valores</h1>
+    <input type="number" id="valor" placeholder="Digite um valor">
+    <button onclick="add()">Adicionar</button>
+    <select id="algoritmo">
+        <option value="bubble_sort">Bubble Sort</option>
+        <option value="selection_sort">Selection Sort</option>
+        <option value="quick_sort">Quick Sort</option>
+    </select>
+    <button onclick="ordenar()">Ordenar</button>
+    <button onclick="misturar()">Misturar</button>
+    <ul id="valores"></ul>
+    <script>
+        function add() {
+            const valorInput = document.getElementById('valor');
+            const lista = document.getElementById('valores');
+            const node = document.createElement('li');
+            const textNode = document.createTextNode(valorInput.value);
+            node.appendChild(textNode);
+            lista.appendChild(node);
+            valorInput.value = '';
+        }
+
+        function ordenar() {
+            const lista = document.getElementById('valores');
+            const algoritmo = document.getElementById('algoritmo');
+            let valores = Array.from(lista.children).map(item => parseInt(item.innerHTML));
+            switch (algoritmo.value) {
+                case 'bubble_sort':
+                    valores = bubble_sort(valores);
+                    break;
+                case 'selection_sort':
+                    valores = selection_sort(valores);
+                    break;
+                case 'quick_sort':
+                    valores = quick_sort(valores, 0, valores.length - 1);
+                    break;
+            }
+            lista.innerHTML = valores.map(valor => `<li>${valor}</li>`).reduce((acc, item) => acc + item, '');
+        }
+
+        function misturar() {
+            const lista = document.getElementById('valores');
+            let valores = Array.from(lista.children).map(item => parseInt(item.innerHTML));
+            shuffle(valores, valores.length * 2);
+            lista.innerHTML = valores.map(valor => `<li>${valor}</li>`).reduce((acc, item) => acc + item, '');
+        }
+
+        // Função swap
+        const swap = (arr, i, j) => {
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        };
+
+        // Função shuffle
+        const shuffle = (arr, swaps) => {
+            for (let i = 0; i < swaps; i++) {
+                let idx1 = Math.floor(Math.random() * arr.length);
+                let idx2 = Math.floor(Math.random() * arr.length);
+                swap(arr, idx1, idx2);
+            }
+        };
+
+        // Função bubble_sort
+        const bubble_sort = (arr) => {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - 1 - i; j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        swap(arr, j, j + 1);
+                    }
+                }
+            }
+            return arr;
+        };
+
+        // Função selection_sort
+        const selection_sort = (arr) => {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < n; j++) {
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx = j;
+                    }
+                }
+                swap(arr, i, minIdx);
+            }
+            return arr;
+        };
+
+        // Função particionamento (para quick_sort)
+        const particionamento = (arr, low, high) => {
+            let pivot = arr[high];
+            let i = low - 1;
+            for (let j = low; j < high; j++) {
+                if (arr[j] < pivot) {
+                    i++;
+                    swap(arr, i, j);
+                }
+            }
+            swap(arr, i + 1, high);
+            return i + 1;
+        };
+
+        // Função quick_sort
+        const quick_sort = (arr, low, high) => {
+            if (low < high) {
+                let pi = particionamento(arr, low, high);
+                quick_sort(arr, low, pi - 1);
+                quick_sort(arr, pi + 1, high);
+            }
+            return arr;
+        };
+    </script>
+</body>
+</html>
